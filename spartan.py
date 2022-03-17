@@ -68,5 +68,6 @@ class Spartan:
     def set_stream(self, n_stream):
         self.stream = n_stream
 
+hello = Spartan(1,2,3,4,5,6,78,8)
 
-
+print(type(hello))
