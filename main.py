@@ -1,6 +1,7 @@
 from spartan import *
 from flask import Flask, request, jsonify
-
+import json
+import management
 
 flask_object = Flask(__name__)  # telling py i want to create a new server
 
@@ -16,6 +17,9 @@ def home_page():
 
 @flask_object.route('/spartan_add', methods=['POST'])  # allows user to add sparta data by passing json file
 def add_employee():
+    management.json_load(v_dict)
+    # management.json_load()
+
     sparta_data = request.json  #
     sparta_id = sparta_data['spartan_id']
     first_name = sparta_data['first_name']
@@ -27,15 +31,27 @@ def add_employee():
     stream = sparta_data['stream']
 
     # call the method that will create the employee record
-    trainee = Spartan(sparta_id, first_name, last_name, birth_year, birth_month, birth_day, course, stream)
-    trainee.print_all()
-    return f"The employee ({sparta_id}: {first_name} {last_name} {birth_year} {birth_month} {birth_day} {course} {stream})"
+
+    trainee_obj = Spartan(sparta_id, first_name, last_name, birth_year, birth_month, birth_day, course, stream)
+    trainee_obj.print_all()
+    # return f"The employee ({sparta_id}: {first_name} {last_name} {birth_year} {birth_month} {birth_day} {course} {stream})"
+
+    sparta_dict[sparta_id] = trainee_obj
+    print('--------------sparta dict of objects-------')
+    print(sparta_dict)
+    print('--------------individual trainee obj-------')
+    print(trainee_obj)
+
+    management.json_save(v_dict)
+    return "done"
+
 
 
 # http://127.0.0.1:5000//spartan/<spartan_id> get certain employee data, return error message if id doesnt exists in system, return as string
 @flask_object.route('/spartan/<spartan_id>', methods=["GET"])
 def sparta_id_getter(spartan_id):
     # Check the database, read from a file, etc
+
     data = jsonify(id=spartan_id, name="Test", position="Data")
     return data
 
@@ -54,4 +70,8 @@ def list_all():
 
 
 if __name__ == "__main__":
+    sparta_dict = {}
+    v_dict = sparta_dict
+
+
     flask_object.run(debug=True)  # dont use debug true when pushing to server
