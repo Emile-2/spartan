@@ -15,101 +15,139 @@ def sparta_request():
     sparta_data = request.data
     return sparta_data
 
-def add_spartan(sparta_data):
+def add_spartan(sparta_dict_v):
+    global v_dict
+    # json_load(v_dict)
 
-    # sparta_data = request.json  #
-    sparta_id = sparta_data['spartan_id']
-    first_name = sparta_data['first_name']
-    last_name = sparta_data['last_name']
-    birth_year = sparta_data['birth_year']
-    birth_month = sparta_data['birth_month']
-    birth_day = sparta_data['birth_day']
-    course = sparta_data['course']
-    stream = sparta_data['stream']
+
+    sparta_data = request.json
+    try:
+        sparta_id = read_sparta_id(sparta_data['spartan_id'])
+    except Exception:
+        return "Error, Spartan ID must be a positive number"
+
+    if sparta_id == False:
+        return "Error, Spartan ID must be a positive number"
+
+    if str(sparta_id) in sparta_dict_v.keys():
+        return "This ID is already in our records"
+
+    first_name_v = read_name(sparta_data['first_name'])
+    if first_name_v == False:
+        return "First name must be more than one character"
+
+    last_name = read_name(sparta_data['last_name'])
+    if last_name == False:
+        return "Last Name must be more than one character"
+
+    birth_year = read_year(sparta_data['birth_year'])
+    if birth_year == False:
+        return "Birth year must be a digit and between 1900-2000"
+
+    birth_month = read_month(sparta_data['birth_month'])
+    if birth_month == False:
+        return "Birth month must be a digit and between 1-12"
+
+    birth_day = read_day(sparta_data['birth_day'])
+    if birth_day == False:
+        return "Birth day must be a digit and between 1-31"
+
+    course = read_text('Course', sparta_data['course'])
+    if course == False:
+        return "Course must be more than 1 character"
+
+    stream = read_text("Stream", sparta_data['stream'])
+    if stream == False:
+        return "Stream must be more than 1 character"
 
     # call the method that will create the employee record
 
-    trainee_obj = Spartan(sparta_id, first_name, last_name, birth_year, birth_month, birth_day, course, stream)
+    trainee_obj = Spartan(sparta_id, first_name_v, last_name, birth_year, birth_month, birth_day, course, stream)
     trainee_obj.print_all()
-    # return f"The employee ({sparta_id}: {first_name} {last_name} {birth_year} {birth_month} {birth_day} {course} {stream})"
 
-    sparta_dict[sparta_id] = trainee_obj
-    print('--------------sparta dict of objects-------')
-    print(sparta_dict)
-    print('--------------individual trainee obj-------')
-    print(trainee_obj)
+    sparta_dict_v[sparta_id] = trainee_obj
 
-    json_save()
+    # json_save(v_dict)
+    return f"Spartan ID: {trainee_obj.get_spartan_id()}'s details have been successfully added to the system"
 
-    return "added"
+def read_sparta_id(spartan_id):
+    try:
+        id_str = str(spartan_id)
+        id_str = id_str.strip()
 
-def read_employee_id():
-    id_str = input("Please Enter the Employee ID:")
-    id_str = id_str.strip()
-
-    if id_str.isdigit():
-        id = int(id_str)
-        if id > 0:
-            return id
+        if id_str.isdigit():
+            id_str = int(id_str)
+            if id_str > 0:
+                return spartan_id
+            else:
+                return False
         else:
-            print("Error, The Employee ID should be positive number")
+            return False
+    except Exception as ex:
+
+        return False
+
+
+def read_name(name_str):
+    name_str = str(name_str)
+    name = name_str.strip()
+    print("------ THIS IS readname---------")
+
+    print(type(name))
+
+    if len(name_str) >= 2:
+        return name_str
     else:
-        print("Error, The Employee ID should be a number")
-
-
-def read_name(text, name):
-    name = name.strip()
-
-    if len(name) >= 2:
-        return name
-    else:
-        return (f"Error, The Employee {text} Name should be at least 2 Characters\n")
+        return False
 
 
 def read_text(text, course_str):
-    # course = course_str.strip()
+    course_str = str(course_str)
+    course = course_str.strip()
 
-    if len(course_str) >= 2:
+    if len(str(course)) >= 2:
         return course_str
     else:
-        return f"Error, The {text} should be at least 2 Characters\n"
+        return False
 
 def read_year(year_str):
-
-    # if year_str.isdigit():
-    year = int(year_str)
-    if (year >= 1900) and (year <= 2004):
-        return year
-    else:
-        print("Error, The Employee Birth Year should be between 1900 and 2004")
-    # else:
-    #     print("Error, The Employee Birth Year should be a number")
+    year_str = str(year_str)
+    try:
+        if year_str.isdigit():
+            year = int(year_str.strip())
+        if (year >= 1900) and (year <= 2004):
+            return year
+        else:
+            return False
+    except Exception as ex:
+        return False
 
 
 def read_month(month_str):
-    # month_str = month_str.strip()
 
-    # if month_str.isdigit():
-    month = int(month_str)
-    if (month >= 1) and (month <= 12):
-        return month
-    else:
-        print("Error, The Employee Birth Month should be between 1 and 12")
-    # else:
-    #     print("Error, The Employee Birth Month should be a number")
+    month_str = str(month_str)
+    try:
+        if month_str.isdigit():
+            month = int(month_str.strip())
+        if (month >= 1) and (month <= 12):
+            return month
+        else:
+            return False
+    except Exception as ex:
+        return False
 
 
 def read_day(day_str):
-    # day_str = day_str.strip()
-
-    # if day_str.isdigit():
-    day = int(day_str)
-    if (day >= 1) and (day <= 31):
-        return day
-    else:
-        print("Error, The Employee Birth Day should be between 1 and 31")
-    # else:
-    #     print("Error, The Employee Birth Day should be a number")
+    day_str = str(day_str)
+    try:
+        if day_str.isdigit():
+            day = int(day_str.strip())
+        if (day >= 1) and (day <= 31):
+            return day
+        else:
+            return False
+    except Exception:
+        return False
 
 
 def json_load(sparta_dict_v):
@@ -130,8 +168,7 @@ def json_load(sparta_dict_v):
 
         new = Spartan(n_emp_id, n_f_name,n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream )
         sparta_dict_v[spartan_id_key] = new
-        print("___this is new_____")
-        print(sparta_dict_v)
+
 
 def json_save(sparta_dict_v):
     global sparta_dict
@@ -139,16 +176,12 @@ def json_save(sparta_dict_v):
     temp_dict_of_dict = {}  # creating an empty dictionary to store the employee dictionary as visual data/ not objects
 
     for sparta_id in sparta_dict_v:  # iterating through the keys in the sparta dictionary
-        multiple_sparta_obj = sparta_dict_v[
-            sparta_id]  # creating a variable which contains the sparta_objects in the dictionary/ at the sparta id location
+        multiple_sparta_obj = sparta_dict_v[sparta_id]  # creating a variable which contains the sparta_objects in the dictionary/ at the sparta id location
         sparta_dict_json = multiple_sparta_obj.__dict__  # creating a variable which opens the sparta_object_dict and visualises it as a dictionary
-        temp_dict_of_dict[
-            sparta_id] = sparta_dict_json  # using the temp dict of dict to store the employee_obj_dict at the respective employee id key
+        temp_dict_of_dict[sparta_id] = sparta_dict_json  # using the temp dict of dict to store the employee_obj_dict at the respective employee id key
 
-    with open("data.json",
-              "w") as sparta_json_dict_of_dict:  # opening the json file in write mode, overides the data on there already
-        json.dump(temp_dict_of_dict, sparta_json_dict_of_dict,
-                  indent=4)  # dumping the dictionary of dicts in the json file and format
+    with open("data.json","w") as sparta_json_dict_of_dict:  # opening the json file in write mode, overides the data on there already
+        json.dump(temp_dict_of_dict, sparta_json_dict_of_dict,indent=4)  # dumping the dictionary of dicts in the json file and format
 #
 # if __name__ == "__main__":
 #     sparta_dict = {}
