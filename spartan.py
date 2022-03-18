@@ -1,5 +1,4 @@
 
-
 class Spartan:
 
     def __init__(self, s_id, f_name,
@@ -60,14 +59,14 @@ class Spartan:
         self.course = n_course
 
     def print_all(self):
-        print(f"""{self.spartan_id}{self.first_name} {self.last_name}
-                    {self.birth_year}{self.birth_month} {self.birth_day}
-                    {self.course}{self.stream}
+        return(f"""
+Spartan ID = {self.spartan_id}
+First Name = {self.first_name} 
+Last Name = {self.last_name}
+D.O.B = {self.birth_day}/{self.birth_month}/{self.birth_year}
+Course = {self.course}                    
+Stream = {self.stream}
 """)
 
     def set_stream(self, n_stream):
         self.stream = n_stream
-
-hello = Spartan(1,2,3,4,5,6,78,8)
-
-print(type(hello))
