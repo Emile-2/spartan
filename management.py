@@ -99,21 +99,21 @@ def json_load(sparta_dict_v):
         sparta_dict_v[spartan_id_key] = new
 
 
-def json_save(sparta_dict_v):
-    global sparta_dict
-
-    temp_dict_of_dict = {}
-
-    for sparta_id in sparta_dict_v:
-        multiple_sparta_obj = sparta_dict_v[sparta_id]
-        sparta_dict_json = multiple_sparta_obj.__dict__
-        temp_dict_of_dict[sparta_id] = sparta_dict_json
-    try:
-
-        with open("data.json", "w") as sparta_json_dict_of_dict:
-            json.dump(temp_dict_of_dict, sparta_json_dict_of_dict, indent=4)
-    except Exception:
-        return "File not found"
+# def json_save(sparta_dict_v):
+#     global sparta_dict
+#
+#     temp_dict_of_dict = {}
+#
+#     for sparta_id in sparta_dict_v:
+#         multiple_sparta_obj = sparta_dict_v[sparta_id]
+#         sparta_dict_json = multiple_sparta_obj.__dict__
+#         temp_dict_of_dict[sparta_id] = sparta_dict_json
+#     try:
+#
+#         with open("data.json", "w") as sparta_json_dict_of_dict:
+#             json.dump(temp_dict_of_dict, sparta_json_dict_of_dict, indent=4)
+#     except Exception:
+#         return "File not found"
 
 
 def spartan_id_get(sparta_id):
@@ -172,7 +172,7 @@ def adding_spartan(sparta_data):
     if sparta_id == False:
         return "Error, Spartan ID must be a positive number"
 
-    if str(sparta_id) in sparta_dict.keys():
+    if sparta_id in sparta_dict:
         return "This ID is already in our records"
 
     first_name_v = read_name(sparta_data['first_name'])
