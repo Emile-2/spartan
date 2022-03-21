@@ -16,53 +16,37 @@ def home_page():
     View specific Spartan record by ID: /spartan/'enter spartan id here'   
     """
 
+
 @flask_object.route('/spartan_add', methods=['POST'])  # allows user to add sparta data by passing json file
 def add_spartan_api():
-    management.json_load(v_dict)
-    adding = management.add_spartan(v_dict)
-    management.json_save(v_dict)
 
-    return adding
+    sparta_data = request.json
+
+    return management.adding_spartan(sparta_data)
+
 
 # http://127.0.0.1:5000//spartan/<spartan_id> get certain employee data, return error message if id doesnt exists in system, return as string
 @flask_object.route('/spartan/<spartan_id>', methods=["GET"])
 def sparta_id_getter(spartan_id):
 
-    id_get = management.spartan_id_get(spartan_id)
-    return id_get
+    return management.spartan_id_get(spartan_id)
 
 
 # #http://127.0.0.1:5000/spartan/remove?id=sparta_id   This API should allow the user to remove a spartan from the system by passing the sparta_id in the query_string
 @flask_object.route('/spartan/remove', methods=['POST'])
 def remove(): # can this be done in the <> method
-    management.json_load(v_dict)
 
     id_to_remove = request.args.get("id")
-    try:
-        del v_dict[id_to_remove]
-    except Exception as ex:
-        return f"ID: {id_to_remove} does not exist"
-
-    management.json_save(v_dict)
-
-    return f"User would like to remove: {id_to_remove}"
+    return management.remove_spartan(id_to_remove)
 
 @flask_object.route('/spartan', methods=["GET"])
 def list_all():
-    # with open("data.json") as employee_json:
-    #     employee_dict_json = json.load(employee_json)
-    #     for keys in employee_dict_json:
-    #         print(employee_dict_json[keys])
 
-    with open("data.json") as employee_json:
-        employee_dict_json = json.load(employee_json)
-        for keys in employee_dict_json:
-            return(employee_dict_json[keys])
-
+    return jsonify(management.list_spartans())
 
 if __name__ == "__main__":
 
     sparta_dict = {}
-    v_dict = sparta_dict
+
 
     flask_object.run(debug=True)  # dont use debug true when pushing to server

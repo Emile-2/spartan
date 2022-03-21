@@ -1,15 +1,169 @@
 import json
 from spartan import Spartan
-from flask import request
 
-# def sparta_request():
-#     sparta_data = request.data
-#     return sparta_data
 
-def add_spartan(sparta_dict_v):
-    global v_dict
+def read_sparta_id(spartan_id):
+    try:
+        id_str = str(spartan_id)
+        if id_str.isdigit():
+            id_str = int(id_str.strip())
+            if id_str > 0:
+                return spartan_id
+            else:
+                return False
+        else:
+            return False
+    except Exception as ex:
 
-    sparta_data = request.json
+        return False
+
+
+def read_name(name_str):
+    name_str = str(name_str)
+    if len(name_str.strip()) >= 2:
+        return name_str
+    else:
+        return False
+
+
+def read_text(course_str):
+    course_str = str(course_str)
+    course = course_str.strip()
+
+    if len(str(course)) >= 2:
+        return course_str
+    else:
+        return False
+
+
+def read_year(year_str):
+    year_str = str(year_str)
+    try:
+        if year_str.isdigit():
+            year = int(year_str.strip())
+            if (year >= 1900) and (year <= 2004):
+                return year
+            else:
+                return False
+    except Exception as ex:
+        return False
+
+
+def read_month(month_str):
+    month_str = str(month_str)
+    try:
+        if month_str.isdigit():
+            month = int(month_str.strip())
+            if (month >= 1) and (month <= 12):
+                return month
+            else:
+                return False
+    except Exception as ex:
+        return False
+
+
+def read_day(day_str):
+    day_str = str(day_str)
+    try:
+        if day_str.isdigit():
+            day = int(day_str.strip())
+            if (day >= 1) and (day <= 31):
+                return day
+            else:
+                return False
+    except Exception:
+        return False
+
+
+def json_load(sparta_dict_v):
+    global sparta_dict
+
+    try:
+        with open("data.json", "r") as jsonload:
+            return_spartan = json.load(jsonload)
+
+    except Exception as ex:
+        return ("Records empty")
+
+    for spartan_id_key in return_spartan:
+        n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
+        n_f_name = return_spartan[spartan_id_key]["first_name"]
+        n_l_name = return_spartan[spartan_id_key]["last_name"]
+        n_y_ob = return_spartan[spartan_id_key]["birth_year"]
+        n_m_ob = return_spartan[spartan_id_key]["birth_month"]
+        n_d_ob = return_spartan[spartan_id_key]["birth_day"]
+        n_course = return_spartan[spartan_id_key]["course"]
+        n_stream = return_spartan[spartan_id_key]["stream"]
+
+        new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+        sparta_dict_v[spartan_id_key] = new
+
+
+def json_save(sparta_dict_v):
+    global sparta_dict
+
+    temp_dict_of_dict = {}
+
+    for sparta_id in sparta_dict_v:
+        multiple_sparta_obj = sparta_dict_v[sparta_id]
+        sparta_dict_json = multiple_sparta_obj.__dict__
+        temp_dict_of_dict[sparta_id] = sparta_dict_json
+    try:
+
+        with open("data.json", "w") as sparta_json_dict_of_dict:
+            json.dump(temp_dict_of_dict, sparta_json_dict_of_dict, indent=4)
+    except Exception:
+        return "File not found"
+
+
+def spartan_id_get(sparta_id):
+    try:
+        with open("data.json", "r") as jsonload:
+            return_spartan = json.load(jsonload)
+    except Exception:
+        return "File not found"
+
+    temp_dict = {}
+    if sparta_id in return_spartan.keys():
+        n_emp_id = return_spartan[sparta_id]["spartan_id"]
+        n_f_name = return_spartan[sparta_id]["first_name"]
+        n_l_name = return_spartan[sparta_id]["last_name"]
+        n_y_ob = return_spartan[sparta_id]["birth_year"]
+        n_m_ob = return_spartan[sparta_id]["birth_month"]
+        n_d_ob = return_spartan[sparta_id]["birth_day"]
+        n_course = return_spartan[sparta_id]["course"]
+        n_stream = return_spartan[sparta_id]["stream"]
+
+        new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+        temp_dict[sparta_id] = new
+        return new.print_all()
+    else:
+        return "This ID is not in our records"
+
+
+def adding_spartan(sparta_data):
+    global sparta_dict
+
+    try:
+        with open("data.json", "r+") as jsonload:  ##loading part
+            return_spartan = json.load(jsonload)
+
+        for spartan_id_key in return_spartan:
+            n_emp_id = return_spartan[spartan_id_key]["spartan_id"]  ##### instance
+            n_f_name = return_spartan[spartan_id_key]["first_name"]
+            n_l_name = return_spartan[spartan_id_key]["last_name"]
+            n_y_ob = return_spartan[spartan_id_key]["birth_year"]
+            n_m_ob = return_spartan[spartan_id_key]["birth_month"]
+            n_d_ob = return_spartan[spartan_id_key]["birth_day"]
+            n_course = return_spartan[spartan_id_key]["course"]
+            n_stream = return_spartan[spartan_id_key]["stream"]
+
+            new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+
+            sparta_dict[spartan_id_key] = new
+    except Exception:
+        pass
+
     try:
         sparta_id = read_sparta_id(sparta_data['spartan_id'])
     except Exception:
@@ -18,7 +172,7 @@ def add_spartan(sparta_dict_v):
     if sparta_id == False:
         return "Error, Spartan ID must be a positive number"
 
-    if str(sparta_id) in sparta_dict_v.keys():
+    if str(sparta_id) in sparta_dict.keys():
         return "This ID is already in our records"
 
     first_name_v = read_name(sparta_data['first_name'])
@@ -41,109 +195,79 @@ def add_spartan(sparta_dict_v):
     if birth_day == False:
         return "Birth day must be a digit and between 1-31"
 
-    course = read_text('Course', sparta_data['course'])
+    course = read_text(sparta_data['course'])
     if course == False:
         return "Course must be more than 1 character"
 
-    stream = read_text("Stream", sparta_data['stream'])
+    stream = read_text(sparta_data['stream'])
     if stream == False:
         return "Stream must be more than 1 character"
 
     # call the method that will create the employee record
+    if str(sparta_id) not in sparta_dict.keys():
 
-    trainee_obj = Spartan(sparta_id, first_name_v, last_name,
-                          birth_year, birth_month, birth_day,
-                          course, stream)
+        trainee_obj = Spartan(sparta_id, first_name_v, last_name,
+                              birth_year, birth_month, birth_day,
+                              course, stream)
 
-    # trainee_obj.print_all()
-    sparta_dict_v[sparta_id] = trainee_obj
+        sparta_dict[sparta_id] = trainee_obj
 
-    # json_save(v_dict)
-    return f"Spartan ID: {trainee_obj.get_spartan_id()}'s details have been successfully added to the system"
+        temp_dict_of_dict = {}
 
-def read_sparta_id(spartan_id):
+        for sparta_id in sparta_dict:
+            multiple_sparta_obj = sparta_dict[sparta_id]
+
+            sparta_dict_json = multiple_sparta_obj.__dict__
+
+            temp_dict_of_dict[sparta_id] = sparta_dict_json
+        try:
+
+            with open("data.json",
+                      "w") as sparta_json_dict_of_dict:  # opening the json file in write mode, overides the data on there already
+                json.dump(temp_dict_of_dict, sparta_json_dict_of_dict,
+                          indent=4)  # dumping the dictionary of dicts in the json file and format
+
+        except Exception:
+            return "File not found"
+
+        return f"Spartan ID: {trainee_obj.get_spartan_id()}'s details have been successfully added to the system"
+
+
+def list_spartans():
+    global sparta_dict
+
     try:
-        id_str = str(spartan_id)
-        id_str = id_str.strip()
+        with open("data.json", "r") as jsonload:
+            return_spartan = json.load(jsonload)
 
-        if id_str.isdigit():
-            id_str = int(id_str)
-            if id_str > 0:
-                return spartan_id
-            else:
-                return False
-        else:
-            return False
+        all_spartans = []
+
+        for spartan_id_key in return_spartan:
+            n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
+            n_f_name = return_spartan[spartan_id_key]["first_name"]
+            n_l_name = return_spartan[spartan_id_key]["last_name"]
+            n_y_ob = return_spartan[spartan_id_key]["birth_year"]
+            n_m_ob = return_spartan[spartan_id_key]["birth_month"]
+            n_d_ob = return_spartan[spartan_id_key]["birth_day"]
+            n_course = return_spartan[spartan_id_key]["course"]
+            n_stream = return_spartan[spartan_id_key]["stream"]
+
+            new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+            sparta_dict = new
+
+            all_spartans.append(new.__dict__)
+
+            # print(sparta_dict.__dict__)
+
+        print("----------")
+        print(all_spartans)
+        return all_spartans
+
     except Exception as ex:
-
-        return False
-
-def list_prep(): pass
+        return ("Records empty")
 
 
-def read_name(name_str):
-    name_str = str(name_str)
-    name = name_str.strip()
-    print("------ THIS IS readname---------")
-
-    print(type(name))
-
-    if len(name_str) >= 2:
-        return name_str
-    else:
-        return False
-
-
-def read_text(text, course_str):
-    course_str = str(course_str)
-    course = course_str.strip()
-
-    if len(str(course)) >= 2:
-        return course_str
-    else:
-        return False
-
-def read_year(year_str):
-    year_str = str(year_str)
-    try:
-        if year_str.isdigit():
-            year = int(year_str.strip())
-        if (year >= 1900) and (year <= 2004):
-            return year
-        else:
-            return False
-    except Exception as ex:
-        return False
-
-
-def read_month(month_str):
-
-    month_str = str(month_str)
-    try:
-        if month_str.isdigit():
-            month = int(month_str.strip())
-        if (month >= 1) and (month <= 12):
-            return month
-        else:
-            return False
-    except Exception as ex:
-        return False
-
-
-def read_day(day_str):
-    day_str = str(day_str)
-    try:
-        if day_str.isdigit():
-            day = int(day_str.strip())
-        if (day >= 1) and (day <= 31):
-            return day
-        else:
-            return False
-    except Exception:
-        return False
-
-
-def json_load(sparta_dict_v):
+def remove_spartan(id_to_remove):
     global sparta_dict
 
     try:
@@ -151,89 +275,30 @@ def json_load(sparta_dict_v):
             return_spartan = json.load(jsonload)
 
     except Exception as ex:
-        return ("Records empty")
+        return "Records empty"
 
-    for spartan_id_key in return_spartan:
-
-        n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
-        n_f_name = return_spartan[spartan_id_key]["first_name"]
-        n_l_name = return_spartan[spartan_id_key]["last_name"]
-        n_y_ob = return_spartan[spartan_id_key]["birth_year"]
-        n_m_ob = return_spartan[spartan_id_key]["birth_month"]
-        n_d_ob = return_spartan[spartan_id_key]["birth_day"]
-        n_course = return_spartan[spartan_id_key]["course"]
-        n_stream = return_spartan[spartan_id_key]["stream"]
-
-        new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream )
-        sparta_dict_v[spartan_id_key] = new
-
-
-def json_save(sparta_dict_v):
-    global sparta_dict
-    # want to get the keys from the dictionary of objects, and add those object values to a dictionary of dictionary and add that to the json file
-    temp_dict_of_dict = {}  # creating an empty dictionary to store the spartan dictionary as visual data/ not objects
-
-    for sparta_id in sparta_dict_v:  # iterating through the keys in the sparta dictionary
-        multiple_sparta_obj = sparta_dict_v[sparta_id]  # creating a variable which contains the sparta_objects in the dictionary/ at the sparta id location
-
-        sparta_dict_json = multiple_sparta_obj.__dict__  # creating a variable which opens the sparta_object_dict and visualises it as a dictionary
-
-        temp_dict_of_dict[sparta_id] = sparta_dict_json  # using the temp dict of dict to store the sparta employee dict of info at the respective employee id key
     try:
+        del sparta_dict[id_to_remove]
+    except Exception as ex:
+        return f"ID: {id_to_remove} does not exist"
 
-        with open("data.json", "w") as sparta_json_dict_of_dict:  # opening the json file in write mode, overides the data on there already
-            json.dump(temp_dict_of_dict, sparta_json_dict_of_dict,indent=4)  # dumping the dictionary of dicts in the json file and format
+    temp_dict_of_dict = {}
 
+    for sparta_id in sparta_dict:
+        multiple_sparta_obj = sparta_dict[sparta_id]
+
+        sparta_dict_json = multiple_sparta_obj.__dict__
+
+        temp_dict_of_dict[sparta_id] = sparta_dict_json
+    try:
+        with open("data.json",
+                  "w") as sparta_json_dict_of_dict:
+            json.dump(temp_dict_of_dict, sparta_json_dict_of_dict,
+                      indent=4)
     except Exception:
         return "File not found"
 
-
-# def spartan_obj_list():
-#
-#     temp_dict = {}
-#     with open("data.json", "r") as jsonload:
-#         return_spartan = json.load(jsonload)
-#
-#     for spartan_id_key in return_spartan:
-#         n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
-#         n_f_name = return_spartan[spartan_id_key]["first_name"]
-#         n_l_name = return_spartan[spartan_id_key]["last_name"]
-#         n_y_ob = return_spartan[spartan_id_key]["birth_year"]
-#         n_m_ob = return_spartan[spartan_id_key]["birth_month"]
-#         n_d_ob = return_spartan[spartan_id_key]["birth_day"]
-#         n_course = return_spartan[spartan_id_key]["course"]
-#         n_stream = return_spartan[spartan_id_key]["stream"]
-#
-#         new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
-#         temp_dict[spartan_id_key] = new
-#
-#         return temp_dict[spartan_id_key].print_all()
-
-def spartan_id_get(sparta_id):
-
-    with open("data.json", "r") as jsonload:
-        return_spartan = json.load(jsonload)
-
-    temp_dict = {}
-    if sparta_id in return_spartan.keys():
-        n_emp_id = return_spartan[sparta_id]["spartan_id"]
-        n_f_name = return_spartan[sparta_id]["first_name"]
-        n_l_name = return_spartan[sparta_id]["last_name"]
-        n_y_ob = return_spartan[sparta_id]["birth_year"]
-        n_m_ob = return_spartan[sparta_id]["birth_month"]
-        n_d_ob = return_spartan[sparta_id]["birth_day"]
-        n_course = return_spartan[sparta_id]["course"]
-        n_stream = return_spartan[sparta_id]["stream"]
-
-        new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
-        temp_dict[sparta_id] = new
-        return new.print_all()
-    else:
-        return "This ID is not in our records"
+    return f"User would like to remove: {id_to_remove}"
 
 
-
-
-
-
-
+sparta_dict = {}
