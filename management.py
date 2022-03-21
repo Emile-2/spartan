@@ -257,10 +257,6 @@ def list_spartans():
 
             all_spartans.append(new.__dict__)
 
-            # print(sparta_dict.__dict__)
-
-        print("----------")
-        print(all_spartans)
         return all_spartans
 
     except Exception as ex:
@@ -271,14 +267,28 @@ def remove_spartan(id_to_remove):
     global sparta_dict
 
     try:
-        with open("data.json", "r") as jsonload:
+        with open("data.json", "r+") as jsonload:  ##loading part
             return_spartan = json.load(jsonload)
 
-    except Exception as ex:
-        return "Records empty"
+        for spartan_id_key in return_spartan:
+            n_emp_id = return_spartan[spartan_id_key]["spartan_id"]  ##### instance
+            n_f_name = return_spartan[spartan_id_key]["first_name"]
+            n_l_name = return_spartan[spartan_id_key]["last_name"]
+            n_y_ob = return_spartan[spartan_id_key]["birth_year"]
+            n_m_ob = return_spartan[spartan_id_key]["birth_month"]
+            n_d_ob = return_spartan[spartan_id_key]["birth_day"]
+            n_course = return_spartan[spartan_id_key]["course"]
+            n_stream = return_spartan[spartan_id_key]["stream"]
+
+            new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+
+            sparta_dict[spartan_id_key] = new
+    except Exception:
+        pass
 
     try:
         del sparta_dict[id_to_remove]
+
     except Exception as ex:
         return f"ID: {id_to_remove} does not exist"
 
