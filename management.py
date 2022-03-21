@@ -75,28 +75,30 @@ def read_day(day_str):
         return False
 
 
-def json_load(sparta_dict_v):
-    global sparta_dict
-
-    try:
-        with open("data.json", "r") as jsonload:
-            return_spartan = json.load(jsonload)
-
-    except Exception as ex:
-        return ("Records empty")
-
-    for spartan_id_key in return_spartan:
-        n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
-        n_f_name = return_spartan[spartan_id_key]["first_name"]
-        n_l_name = return_spartan[spartan_id_key]["last_name"]
-        n_y_ob = return_spartan[spartan_id_key]["birth_year"]
-        n_m_ob = return_spartan[spartan_id_key]["birth_month"]
-        n_d_ob = return_spartan[spartan_id_key]["birth_day"]
-        n_course = return_spartan[spartan_id_key]["course"]
-        n_stream = return_spartan[spartan_id_key]["stream"]
-
-        new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
-        sparta_dict_v[spartan_id_key] = new
+# def json_load(sparta_dict_v):
+#     global sparta_dict
+#
+#     sparta_dict = {}
+#
+#     try:
+#         with open("data.json", "r") as jsonload:
+#             return_spartan = json.load(jsonload)
+#
+#     except Exception as ex:
+#         return ("Records empty")
+#
+#     for spartan_id_key in return_spartan:
+#         n_emp_id = return_spartan[spartan_id_key]["spartan_id"]
+#         n_f_name = return_spartan[spartan_id_key]["first_name"]
+#         n_l_name = return_spartan[spartan_id_key]["last_name"]
+#         n_y_ob = return_spartan[spartan_id_key]["birth_year"]
+#         n_m_ob = return_spartan[spartan_id_key]["birth_month"]
+#         n_d_ob = return_spartan[spartan_id_key]["birth_day"]
+#         n_course = return_spartan[spartan_id_key]["course"]
+#         n_stream = return_spartan[spartan_id_key]["stream"]
+#
+#         new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
+#         sparta_dict_v[spartan_id_key] = new
 
 
 # def json_save(sparta_dict_v):
@@ -117,6 +119,7 @@ def json_load(sparta_dict_v):
 
 
 def spartan_id_get(sparta_id):
+
     try:
         with open("data.json", "r") as jsonload:
             return_spartan = json.load(jsonload)
@@ -142,7 +145,8 @@ def spartan_id_get(sparta_id):
 
 
 def adding_spartan(sparta_data):
-    global sparta_dict
+    # global sparta_dict
+    sparta_dict = {}
 
     try:
         with open("data.json", "r+") as jsonload:  ##loading part
@@ -173,7 +177,7 @@ def adding_spartan(sparta_data):
         return "Error, Spartan ID must be a positive number"
 
     if sparta_id in sparta_dict:
-        return "This ID is already in our records"
+        return "This ID is already in our records here"
 
     first_name_v = read_name(sparta_data['first_name'])
     if first_name_v == False:
@@ -234,7 +238,6 @@ def adding_spartan(sparta_data):
 
 
 def list_spartans():
-    global sparta_dict
 
     try:
         with open("data.json", "r") as jsonload:
@@ -253,7 +256,6 @@ def list_spartans():
             n_stream = return_spartan[spartan_id_key]["stream"]
 
             new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
-            sparta_dict = new
 
             all_spartans.append(new.__dict__)
 
@@ -264,8 +266,8 @@ def list_spartans():
 
 
 def remove_spartan(id_to_remove):
-    global sparta_dict
-
+    # global sparta_dict
+    sparta_dict = {}
     try:
         with open("data.json", "r+") as jsonload:  ##loading part
             return_spartan = json.load(jsonload)
@@ -283,6 +285,7 @@ def remove_spartan(id_to_remove):
             new = Spartan(n_emp_id, n_f_name, n_l_name, n_y_ob, n_m_ob, n_d_ob, n_course, n_stream)
 
             sparta_dict[spartan_id_key] = new
+
     except Exception:
         pass
 
@@ -311,4 +314,4 @@ def remove_spartan(id_to_remove):
     return f"User would like to remove: {id_to_remove}"
 
 
-sparta_dict = {}
+
