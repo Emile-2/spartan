@@ -46,7 +46,6 @@ def list_all():
 
 if __name__ == "__main__":
 
-    # sparta_dict = {}
 
 
     flask_object.run(debug=True)  # dont use debug true when pushing to server
